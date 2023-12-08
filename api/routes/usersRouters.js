@@ -1,13 +1,19 @@
 const express = require('express');
 const userServices = require('./../services/userServices');
+const { trace } = require('joi');
 
 const router = express.Router();
 
 const service = new userServices();
 
 router.get('/', async (req, res) => {
-  const personas = await  service.find();
-  res.status(200).json({ personas });
+  try {
+    const personas = await  service.find();
+    res.status(200).send(personas);
+
+  } catch (error) {
+    res.status(400).send(error)
+  }
 });
 
 router.get('/:id', (req, res) => {

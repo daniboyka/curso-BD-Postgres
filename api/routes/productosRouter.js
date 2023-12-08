@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
     const productos = await service.find();
     res.json(productos);
   } catch (error) {
-    res.status(400), console.log(error)
+    res.status(400).send(error)
   }
 });
 
