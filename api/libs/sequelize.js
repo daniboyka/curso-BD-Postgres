@@ -1,7 +1,7 @@
 const { Sequelize } = require('sequelize');
 
 const { config } = require('./../config/config');
-const setupModels = require('./../db/models');
+const setupModels = require('./../db/index');// atento a esto!!!!!!!!!!!!!!!!!!!!!!
 
 const USER = encodeURIComponent(config.dbUser);
 const PASSWORD = encodeURIComponent(config.dbPassword);
@@ -14,6 +14,6 @@ const sequelize = new Sequelize(URI, {
 
 setupModels(sequelize);
 
-sequelize.sync();
+// sequelize.sync();// esta es la funcion que crea las tablas 1°lee los modelos y dsp crea las tablas, la eliminamos para que las tablas nuevas ka creemos por migraciones
 
 module.exports = sequelize;

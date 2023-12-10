@@ -11,12 +11,6 @@ class ProductosServices {
     // this.pool.on('error', (err) => console.error(err))
   }
 
-  async find() {
-      const query = 'SELECT * FROM tasks';
-      const [data] = await sequelize.query(query)
-      return data;
-  }
-
   async generate() {
     // const limit = size > 100 ? 100 : size || 10; //si size es mayor a 100 no mas me va a traer 100 asi no saturo mi servidor
     const limit = 100;
@@ -30,15 +24,11 @@ class ProductosServices {
       });
   }
 
-  async create(data) {
-    const newProducto = {
-      id: faker.string.uuid(),
-      ...data,
-    };
-    this.productos.push(newProducto);
-    return newProducto;
+  async find() {
+      const query = 'SELECT * FROM tasks';
+      const [data] = await sequelize.query(query)
+      return data;
   }
-
 
   async findOne(id) {
     const producto = this.productos.find((item) => item.id === id);
@@ -50,6 +40,17 @@ class ProductosServices {
     }
     return producto;
   }
+
+  async create(data) {
+    const newProducto = {
+      id: faker.string.uuid(),
+      ...data,
+    };
+    this.productos.push(newProducto);
+    return newProducto;
+  }
+
+
 
   async modificar(id, modificacion) {
     const index = this.productos.findIndex((item) => item.id === id);

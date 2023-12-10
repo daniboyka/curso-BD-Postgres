@@ -25,5 +25,17 @@ const boomErrorsHandler = (err, req, res, next) => {
   }
 };
 
-module.exports = { logErrors, errorsHandler, boomErrorsHandler };
+function sequelizeErrorHandler(err, req, res, next) {
+  if(err.parent) {
+        res.status(500).json({
+          name: err.name,
+          message: err.errors[0].message,
+          detail: err.fields,
+          problema: "el mail ya existen en la base de datos"
+      });
+  }
+  next(err);
+}
+
+module.exports = { logErrors, errorsHandler, boomErrorsHandler, sequelizeErrorHandler };
 //si no es del tipo boom tiraremos este codigo para controlar el erro nomral
