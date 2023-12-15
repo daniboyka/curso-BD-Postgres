@@ -1,6 +1,7 @@
 const express = require('express');
 const productosRouter = require('./productosRouter'); //esot es como importar en la parte del cliente con import
 const usersRouters = require('./usersRouters');
+const customerRouters = require('./customerRouter');
 // const ordersRouters = require('./ordersRouters');
 // const categoriaRouters = require('./categoriasRouters');
 
@@ -9,9 +10,9 @@ const routerApi = (app) => {
   app.use(express.json())
   const router = express.Router();
   app.use('/api/v1/', router);
-
   router.use('/productos', productosRouter);
   router.use('/usuario', usersRouters);
+  router.use('/customer', customerRouters);
   // router.use('/my-orders', ordersRouters);
   // router.use('/categorias', categoriaRouters);
 };
