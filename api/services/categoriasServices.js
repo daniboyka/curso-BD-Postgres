@@ -1,33 +1,48 @@
-// const { faker } = require('@faker-js/faker');
+const boom = require('@hapi/boom');
+const { models } = require('./../libs/sequelize');
 
-// class categoriaServices {
-//   constructor() {
-//     this.categorias = [];
-//     this.generate();
-//   }
-//   generate() {
-//     // const limit = size > 100 ? 100 : size || 10; //si size es mayor a 100 no mas me va a traer 100 asi no saturo mi servidor
-//     const limit = 100;
-//     for (let i = 0; i < limit; i++)
-//       this.categorias.push({
-//         id: faker.string.uuid(),
-//         name: faker.commerce.productAdjective(),
-//       });
-//   }
+class categoriaServices {
+  constructor() {
+    this.cliente = [];
+  }
 
-//   create() {}
+  //con include[] podemos anidar toda la iformacion del modelo usuarion, tiene que estar relacionado(asociados)
 
-//   find() {
-//     return this.categorias
-//   }
+  async find() {
+    const respuesta = await models.Categorias.findAll()
+    return respuesta;
+  }
 
-//   findOne(id) {
-//     return this.categorias.find(categoria => categoria.id === id)
-//   }
+  async findOne(id) {
+    const categoria = await models.Categorias.findByPk(id, {
+      include:['producto']
+    })
+    if (!categoria) {
+      throw boom.notFound('categoria no encontrado');
+    }
+    if (categoria.isBlock) {
+      throw boom.conflict('categoria is block');
+    }
+    return categoria;
+  }
 
-//   modificar() {}
-// }
+  async create(data) {
+    // const nuevoProducto = await models.User.create(data.user);// voy a crear primero el usuario
+    const nuevoCategoria = await models.Categorias.create(data)
+    return nuevoCategoria;
+  }
 
-// module.exports = categoriaServices;
+  async delete(id) {
+    const categoria = await this.findOne(id)
+    await categoria.destroy()
+    return {message:`La categoria con id ${id} fue eliminado con exito`};
+  }
 
+  async modificar(id, modificacion) {
+    const categoria = await this.findOne(id)
+    const respuesta = await categoria.update(modificacion)
+    return respuesta
+  }
+}
 
+module.exports = categoriaServices;

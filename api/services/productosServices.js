@@ -1,7 +1,7 @@
 const { faker } = require('@faker-js/faker');
 const boom = require('@hapi/boom');
 // const pool = require('../libs/postgresPool');
-const sequelize = require('../libs/sequelize');
+const { models } = require('../libs/sequelize');
 
 class ProductosServices {
   constructor() {
@@ -23,15 +23,19 @@ class ProductosServices {
         isBlock: faker.datatype.boolean()
       });
   }
+  //con include[] podemos anidar toda la iformacion del modelo usuarion, tiene que estar relacionado(asociados)
 
   async find() {
-      const query = 'SELECT * FROM tasks';
-      const [data] = await sequelize.query(query)
-      return data;
+    const respuesta = await models.Productos.findAll({
+      include:['categorias']
+    })
+    //   include:['categoria']// aca podemos anidar, (osea hacer como un concatener datos) de los modelos que tenemos relacionados(asociados)
+    // });
+    return respuesta;
   }
 
   async findOne(id) {
-    const producto = this.productos.find((item) => item.id === id);
+    const producto = await models.Customer.findByPk(id);
     if (!producto) {
       throw boom.notFound('producto no encontrado');
     }
@@ -42,37 +46,22 @@ class ProductosServices {
   }
 
   async create(data) {
-    const newProducto = {
-      id: faker.string.uuid(),
-      ...data,
-    };
-    this.productos.push(newProducto);
+    const newProducto = await models.Productos.create(data)
     return newProducto;
   }
 
 
 
   async modificar(id, modificacion) {
-    const index = this.productos.findIndex((item) => item.id === id);
-    if (index === -1) {
-      throw boom.notFound('producto no encontrado');
+    const producto = await this.findOne(id)
+    const respuesta = await producto.update(modificacion)
+    return respuesta
     }
-
-    const current = this.productos[index];
-    this.productos[index] = {
-      ...current,
-      ...modificacion,
-    };
-    return this.productos[index];
-  }
 
   async delete(id) {
-    const index = this.productos.findIndex((item) => item.id === id);
-    if (index === -1) {
-      throw boom.notFound('producto no encontrado');
-    }
-    this.productos.splice(index, 1);
-    return { message: `El producto con id ${id} se elimino correctamente` };
+    const producto = await this.findOne(id)
+    await producto.destroy()
+    return {message:`El producto con id ${id} fue eliminado con exito`};
   }
 }
 

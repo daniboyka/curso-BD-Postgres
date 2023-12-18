@@ -46,7 +46,7 @@ router.post(
     try {
       const body = req.body;
       const cliente = await service.create(body);
-      res.status(201).json({ cliente, message: 'usuario creado' });
+      res.status(201).json({ cliente, message: 'cliente creado' });
     } catch (error) {
       next(error)
     }

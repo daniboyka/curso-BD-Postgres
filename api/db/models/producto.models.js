@@ -1,9 +1,10 @@
 const { Model, DataTypes, Sequelize } = require('sequelize');
-const { USER_TABLE } = require('./user.models');
+const { CATEGORIA_TABLE } = require('./categoria.models')
 
-const CUSTOMER_TABLE = 'customer';
 
-const customerSchema = {
+const PRODUCTO_TABLE = 'productos';
+
+const productosSchema = {
   id: {
     allowNull: false,
     autoIncrement: true,
@@ -13,15 +14,18 @@ const customerSchema = {
   name: {
     allowNull: false,
     type: DataTypes.STRING,
-  },
-  lastName: {
+    },
+  image: {
     allowNull: false,
     type: DataTypes.STRING,
-    field: 'last_name',
   },
-  phone: {
+  description: {
     allowNull: false,
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
+  },
+  price: {
+    allowNull: false,
+    type: DataTypes.INTEGER,
   },
   createdAt: {
     allowNull: false,
@@ -29,13 +33,12 @@ const customerSchema = {
     field: 'create_at',
     defaultValue: Sequelize.NOW,
   },
-  userId:{
-    field:'user_id',
+  categoriaId:{
+    field:'categoria_id',
     allowNull: false,
-    unique: true,
     type: DataTypes.INTEGER,
     references: {
-      model: USER_TABLE,
+      model: CATEGORIA_TABLE,
       key: 'id',
     },
     onUpdate: 'CASCADE',
@@ -43,22 +46,20 @@ const customerSchema = {
   },
 };
 
-class Customer extends Model {
+class Productos extends Model {
   static associate(models) {
-    //associate
-    this.belongsTo(models.User, {as: 'user'});
-    //aca un cliente puede tener muchas ordenes de compras(hasMany() uno a muchos)
-    this.belongsTo(models.Order, {as: 'Order', foreignKey: 'costomerId'});
+      //associate
+      this.belongsTo(models.Categorias, { foreignKey: 'categoriaId', as: 'categorias' });
   }
 
   static config(sequelize) {// estatico
     return {
       sequelize,
-      tableName: CUSTOMER_TABLE,
-      modelName: 'Customer',
+      tableName: PRODUCTO_TABLE,
+      modelName: 'Productos',
       timestamps: false,
     };
   }
 }
 
-module.exports = { CUSTOMER_TABLE, customerSchema, Customer }
+module.exports = { PRODUCTO_TABLE, productosSchema, Productos }

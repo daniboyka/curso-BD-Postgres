@@ -13,7 +13,7 @@ const service = new ProductosServices();
 router.get('/', async (req, res) => {
   try {
     const productos = await service.find();
-    res.json(productos);
+    res.status(200).send(productos);
   } catch (error) {
     res.status(400).send(error);
   }
@@ -42,13 +42,13 @@ router.get(
 router.post(
   '/',
   validatorJoiHandler(createProductosSchema, 'body'),
-  async (req, res) => {
+  async (req, res, next) => {
     try {
       const body = req.body;
       const producto = await service.create(body);
       res.status(201).json({ producto });
     } catch (error) {
-      res.status(401).json({ message: error.message });
+      next(error)
     }
   },
 );
