@@ -9,30 +9,31 @@ class orderServices {
   //con include[] podemos anidar toda la iformacion del modelo usuarion, tiene que estar relacionado(asociados)
 
   async find() {
-    const respuesta = await models.Customer.findAll({
-      include:['user']// aca podemos anidar, (osea hacer como un concatener datos) de los modelos que tenemos relacionados(asociados)
+    const respuesta = await models.Order.findAll({
+      include:['Customer']
     });
     return respuesta;
   }
 
   async findOne(id) {
-    const cliente = await models.Customer.findByPk(id);
-    if (!cliente) {
+    const order = await models.Order.findByPk(id, {
+      include: [{
+        association: 'customer',
+        include: ['user']
+      }]
+    });
+    if (!order) {
       throw boom.notFound('cliente no encontrado');
     }
-    if (cliente.isBlock) {
+    if (order.isBlock) {
       throw boom.conflict('cliente is block');
     }
-    return cliente;
+    return order;
   }
 
   async create(data) {
-    const nuevoUsuario = await models.User.create(data.user);// voy a crear primero el usuario
-    const nuevoCliente = await models.Customer.create({
-      ...data,
-      userId: nuevoUsuario.id
-    })
-    return nuevoCliente;
+    const nuevaOrder = await models.Order.create(data);
+    return nuevaOrder;
   }
 
   async delete(id) {
@@ -48,4 +49,4 @@ class orderServices {
   }
 }
 
-module.exports = customerServices;
+module.exports = orderServices;

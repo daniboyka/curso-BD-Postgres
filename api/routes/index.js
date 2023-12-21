@@ -3,7 +3,7 @@ const productosRouter = require('./productosRouter'); //esot es como importar en
 const usersRouters = require('./usersRouters');
 const customerRouters = require('./customerRouter');
 const categoriaRouters = require('./categoriasRouters');
-// const ordersRouters = require('./ordersRouters');
+const ordersRouters = require('./ordersRouters');
 
 //con el const router = express.Router(); parece que hace que esto app.use('/api/v1/', router); sea fijo y el router es lo que va bariando
 const routerApi = (app) => {
@@ -14,7 +14,7 @@ const routerApi = (app) => {
   router.use('/usuario', usersRouters);
   router.use('/customer', customerRouters);
   router.use('/categorias', categoriaRouters);
-  // router.use('/my-orders', ordersRouters);
+  router.use('/orders', ordersRouters);
 };
 
 module.exports = routerApi;

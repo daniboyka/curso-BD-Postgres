@@ -17,8 +17,8 @@ const orderSchema = {
     field: 'create_at',
     defaultValue: Sequelize.NOW,
   },
-  costomerId:{
-    field:'costomer_id',
+  customerId:{
+    field:'customer_id',
     allowNull: false,
     type: DataTypes.INTEGER,
     references: {
@@ -34,7 +34,7 @@ class Order extends Model {
   static associate(models) {
     //associate
     // una orden pertenezca a varios cliente (costomer)
-    this.belongsTo(models.Customer, {as: 'Customer'});
+    this.belongsTo(models.Customer, {as: 'customer'});
   }
 
   static config(sequelize) {// estatico
@@ -47,4 +47,4 @@ class Order extends Model {
   }
 }
 
-module.exports = { CUSTOMER_TABLE, orderSchema, Order }
+module.exports = { ORDER_TABLE, orderSchema, Order }

@@ -48,7 +48,7 @@ class Customer extends Model {
     //associate
     this.belongsTo(models.User, {as: 'user'});
     //aca un cliente puede tener muchas ordenes de compras(hasMany() uno a muchos)
-    this.belongsTo(models.Order, {as: 'Order', foreignKey: 'costomerId'});
+    this.hasMany(models.Order, {as: 'orders', foreignKey: 'customerId'});
   }
 
   static config(sequelize) {// estatico
