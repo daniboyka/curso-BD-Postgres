@@ -6,18 +6,23 @@ const {
   createProductosSchema,
   modificarProductosSchema,
   getProductosSchema,
+  queryProductosSchema,
 } = require('../schemas/schemaProductos');
 const router = express.Router();
 const service = new ProductosServices();
 
-router.get('/', async (req, res) => {
-  try {
-    const productos = await service.find();
-    res.status(200).send(productos);
-  } catch (error) {
-    res.status(400).send(error);
-  }
-});
+router.get(
+  '/',
+  validatorJoiHandler(queryProductosSchema, 'query'),
+  async (req, res, next) => {
+    try {
+      const productos = await service.find(req.query);
+      res.status(200).json(productos);
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
 router.get(
   '/:id',
@@ -48,7 +53,7 @@ router.post(
       const producto = await service.create(body);
       res.status(201).json({ producto });
     } catch (error) {
-      next(error)
+      next(error);
     }
   },
 );

@@ -20,7 +20,9 @@ class orderServices {
       include: [{
         association: 'customer',
         include: ['user']
-      }]
+      },
+    'items'
+    ]
     });
     if (!order) {
       throw boom.notFound('cliente no encontrado');
@@ -34,6 +36,11 @@ class orderServices {
   async create(data) {
     const nuevaOrder = await models.Order.create(data);
     return nuevaOrder;
+  }
+
+  async addItem(data) {
+    const nuevaItem = await models.OrderProducto.create(data);
+    return nuevaItem;
   }
 
   async delete(id) {

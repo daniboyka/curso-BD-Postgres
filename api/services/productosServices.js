@@ -2,6 +2,8 @@ const { faker } = require('@faker-js/faker');
 const boom = require('@hapi/boom');
 // const pool = require('../libs/postgresPool');
 const { models } = require('../libs/sequelize');
+const { Op } = require('sequelize');
+
 
 class ProductosServices {
   constructor() {
@@ -25,10 +27,31 @@ class ProductosServices {
   }
   //con include[] podemos anidar toda la iformacion del modelo usuarion, tiene que estar relacionado(asociados)
 
-  async find() {
-    const respuesta = await models.Productos.findAll({
-      include:['categorias']
-    })
+  async find(query) {
+    const opciones = {
+      include:['categorias'],
+      where: {}
+    }
+    const { limit, offset } = query;
+    if (limit && offset) {
+      opciones.limit = limit;
+      opciones.offset = offset;
+    }
+
+    const  { price } = query;
+    if (price){
+      opciones.where.price = price;
+    }
+
+    const  { price_min, price_max } = query;
+    if (price_min && price_max){
+      opciones.where.price = {
+        [Op.gte]:price_min,
+        [Op.lte]:price_max,
+      };
+    }
+
+    const respuesta = await models.Productos.findAll(opciones)
     //   include:['categoria']// aca podemos anidar, (osea hacer como un concatener datos) de los modelos que tenemos relacionados(asociados)
     // });
     return respuesta;
