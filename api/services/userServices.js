@@ -3,6 +3,7 @@ const boom = require('@hapi/boom');
 // const getConnection = require('../libs/postgres');
 // const pool = require('../libs/postgresPool');
 const { models } = require('./../libs/sequelize');
+const bcrypt = require('bcrypt');
 
 class userServices {
   constructor() {
@@ -29,6 +30,13 @@ class userServices {
     return respuesta;
   }
 
+  async findByEmail(email) {
+    const respuesta = await models.User.findOne({
+      where: { email }
+    });
+    return respuesta;
+  }
+
   async findOne(id) {
     // const usuario = this.usuarios.find((persona) => persona.id === id);
     const usuario = await models.User.findByPk(id);
@@ -42,7 +50,12 @@ class userServices {
   }
 
   async create(data) {
-    const nuevoUsuario = await models.User.create(data);
+    const hash = await bcrypt.hash(data.password, 10);
+    const nuevoUsuario = await models.User.create({
+      ...data,
+      password: hash
+    });
+    delete nuevoUsuario.dataValues.password;// esto sirve para que no me devuelva el pass cuando creo un usuario por postman
     return nuevoUsuario;
   }
 

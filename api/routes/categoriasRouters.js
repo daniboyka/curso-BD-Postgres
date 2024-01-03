@@ -1,14 +1,20 @@
-const express = require ('express');
+const express = require('express');
 const categoriaServices = require('./../services/categoriasServices');
 const validatorJoiHandler = require('./../middlewares/validetorHandler');
+const { checkRoles } = require('./../middlewares/authHandler');
 const {
-  createCategoriaSchema, modificarCategoriSchema, getCategoriaSchema
+  createCategoriaSchema,
+  modificarCategoriSchema,
+  getCategoriaSchema,
 } = require('../schemas/schemaCategoria');
 const router = express.Router();
+const passport = require('passport');
 
 const service = new categoriaServices();
 
-router.get('/', async (req, res) => {
+router.get('/',
+passport.authenticate('jwt', { session: false }),
+checkRoles('admin', 'seller', 'customer'), async (req, res) => {
   try {
     const categoria = await service.find();
     res.status(200).send(categoria);
@@ -19,6 +25,8 @@ router.get('/', async (req, res) => {
 
 router.get(
   '/:id',
+  passport.authenticate('jwt', { session: false }),
+  checkRoles('admin', 'seller', 'customer'),
   validatorJoiHandler(getCategoriaSchema, 'params'),
   async (req, res, next) => {
     try {
@@ -39,6 +47,8 @@ router.get(
 
 router.post(
   '/',
+  passport.authenticate('jwt', { session: false }), // la autorizacion es el tipo (Bearer ) con ese espacn al final
+  checkRoles('admin'),
   validatorJoiHandler(createCategoriaSchema, 'body'),
   async (req, res, next) => {
     try {
@@ -46,13 +56,15 @@ router.post(
       const categoria = await service.create(body);
       res.status(201).json({ categoria, message: 'usuario creado' });
     } catch (error) {
-      next(error)
+      next(error);
     }
   },
 );
 
 router.patch(
   '/:id',
+  passport.authenticate('jwt', { session: false }),
+  checkRoles('admin', 'seller'),
   validatorJoiHandler(getCategoriaSchema, 'params'), //primero verifica el id
   validatorJoiHandler(modificarCategoriSchema, 'body'), //despues mandamos el dato a modificar
   async (req, res, next) => {
@@ -67,16 +79,20 @@ router.patch(
   },
 );
 
-router.delete('/:id',validatorJoiHandler(getCategoriaSchema, 'params'),
-async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const respuesta = await service.delete(id);
-    res.status(200).send({ respuesta });
-  } catch (error) {
-    next(error)
-  }
-});
-
+router.delete(
+  '/:id',
+  passport.authenticate('jwt', { session: false }),
+  checkRoles('admin', 'seller'),
+  validatorJoiHandler(getCategoriaSchema, 'params'),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const respuesta = await service.delete(id);
+      res.status(200).send({ respuesta });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
 module.exports = router;

@@ -1,16 +1,20 @@
 const express = require('express');
 const cors = require('cors');
 const routerApi = require('./routes');
+const { checkApiKey } = require('./middlewares/authHandler')
 const { logErrors, errorsHandler, boomErrorsHandler, sequelizeErrorHandler } = require('./middlewares/errorHandler');
+
 const app = express();
 const port = process.env.PORT ||  3001;
 
 
 
 app.use(cors())
-app.get('/api', (req, res) => {
+require('./utils/auth/')
+app.get('/api', checkApiKey, (req, res) => {
   res.send('Hola este es mi primer servidor en Express')
 })
+
 routerApi(app);
 app.use(express.json()) //el .json() es para que pueda leer los archivos .json q vienen de las api y casi todos lados como el XML
 
